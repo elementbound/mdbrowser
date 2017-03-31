@@ -17,27 +17,47 @@ def index():
 @app.route('/list/')
 def browse_root():
     drives = get_drives()
-    data = [{'path': drive+'/', 'name': drive, 'flags': {'drive': True}} for drive in drives]
+    data = []
+    for drive in drives:
+        d = {
+            'path': drive+'/',
+            'name': drive,
+            'depth': 0,
+            'flags': {'drive': True}
+        }
+
+        data.append(d)
+
     return json.dumps(data)
 
 @app.route('/list/<path:path>')
 def browse(path):
+    # TODO: use Path instead of os.path
     import os
-    path = os.path.normpath(path)
-    files = os.listdir(path)
+    from pathlib import Path
+
+    path = Path(path)
+    #files = os.listdir(path)
     data = []
 
-    for file in files:
-        fullpath = os.path.join(path, file)
-        # fullpath = os.path.normpath(fullpath)
+    for file in path.iterdir():
+        # Skip file if we have no permission
+        try:
+            file.is_dir()
+        except PermissionError:
+            continue
 
         flags = {}
-        if os.path.isdir(fullpath):
+        depth = len(file.parts)-1
+
+        if file.is_dir():
             flags['directory'] = True
+            #depth -= 1
 
         fdata = {
-            'path': fullpath,
-            'name': file,
+            'path': str(file),
+            'name': file.name,
+            'depth': depth,
             'flags': flags
         }
 

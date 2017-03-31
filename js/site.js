@@ -20,6 +20,8 @@ function formatEntry(entry) {
     let text = $('<a>').appendTo(cell);
     text.html(entry.name);
 
+    cell.css('padding-left', (entry.depth*1.5)+'em');
+
     row.data('entry', entry);
 
     return row;
