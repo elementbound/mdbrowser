@@ -79,8 +79,9 @@ def render(file):
     except PermissionError:
         return 'Permission denied'
 
-    text = file.read_text()
-    html = markdown.markdown(text, output_format="html5")
+    text = file.read_text(encoding='utf8')
+    extensions = ['markdown.extensions.codehilite', 'markdown.extensions.fenced_code']
+    html = markdown.markdown(text, output_format="html5", extensions=extensions)
 
     return flask.Markup(html)
 
