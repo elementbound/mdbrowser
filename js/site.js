@@ -27,51 +27,65 @@ function formatEntry(entry) {
     return row;
 }
 
-function toggleDirectory(cell) {
+function collapseDirectory(cell) {
+    // Remove all its children
+    let children = cell.data('children');
+
+    // Got no children to remove
+    if(!children)
+        return;
+
+    for(let i = 0; i < children.length; i++) {
+        let childCell = children[i].find('td');
+        collapseDirectory(childCell);
+        children[i].remove();
+    }
+
+    // Remember
+    cell.removeProp('expanded');
+
+    // Show
+    cell.find('.icon-expand')
+        .removeClass('glyphicon-minus')
+        .addClass('glyphicon-plus');
+}
+
+function expandDirectory(cell) {
     var parent = cell.parent();
     var entry = parent.data('entry');
+    var children = [];
 
-    if(cell.prop('expanded')) {
-        // Collapse cell
-        let children = cell.data('children');
-        for(let i = 0; i < children.length; i++)
-            children[i].remove();
+    // Expand tree
+    $.getJSON('/list/'+entry.path, undefined, function(data) {
+        // Reverse-iterate entries
+        for(let i = data.length; i--; ) {
+            let entry = data[i];
+            let row = formatEntry(entry);
+            let cell = row.find('td');
 
-        // Remember
-        cell.removeProp('expanded');
+            row.insertAfter(parent);
+            children.push(row);
 
-        // Show
-        cell.find('.icon-expand')
-            .removeClass('glyphicon-minus')
-            .addClass('glyphicon-plus');
-    } else {
-        var children = [];
+            if(entry.flags.directory)
+                cell.click(function(){toggleDirectory($(this));});
+        }
+    });
 
-        // Expand tree
-        $.getJSON('/list/'+entry.path, undefined, function(data) {
-            // Reverse-iterate entries
-            for(let i = data.length; i--; ) {
-                let entry = data[i];
-                let row = formatEntry(entry);
-                let cell = row.find('td');
+    // Remember
+    cell.prop('expanded', true);
+    cell.data('children', children);
 
-                row.insertAfter(parent);
-                children.push(row);
+    // Show
+    cell.find('.icon-expand')
+        .removeClass('glyphicon-plus')
+        .addClass('glyphicon-minus');
+}
 
-                if(entry.flags.directory)
-                    cell.click(function(){toggleDirectory($(this));});
-            }
-        });
-
-        // Remember
-        cell.prop('expanded', true);
-        cell.data('children', children);
-
-        // Show
-        cell.find('.icon-expand')
-            .removeClass('glyphicon-plus')
-            .addClass('glyphicon-minus');
-    }
+function toggleDirectory(cell) {
+    if(cell.prop('expanded'))
+        collapseDirectory(cell);
+    else
+        expandDirectory(cell);
 }
 
 $(document).ready(function() {
