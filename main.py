@@ -13,3 +13,11 @@ def browse(at):
 @app.route('/render/<path:file>')
 def render(file):
     return 'Nice stuff here'
+
+@app.route('/js/<path:path>')
+def serve_js(path):
+    return flask.send_from_directory('js', path)
+
+@app.route('/css/<path:path>')
+def serve_css(path):
+    return flask.send_from_directory('css', path)
