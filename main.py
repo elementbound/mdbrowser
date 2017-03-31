@@ -1,5 +1,6 @@
 import flask
 import json
+from pathlib import Path
 
 def get_drives():
     import string
@@ -34,7 +35,6 @@ def browse_root():
 def browse(path):
     # TODO: use Path instead of os.path
     import os
-    from pathlib import Path
 
     path = Path(path)
     #files = os.listdir(path)
@@ -52,7 +52,9 @@ def browse(path):
 
         if file.is_dir():
             flags['directory'] = True
-            #depth -= 1
+
+        if file.suffix == '.md':
+            flags['markdown'] = True
 
         fdata = {
             'path': str(file),
@@ -67,7 +69,20 @@ def browse(path):
 
 @app.route('/render/<path:file>')
 def render(file):
-    return 'Nice stuff here'
+    import markdown
+
+    file = Path(file)
+    try:
+        if not file.is_file():
+            return 'Error'
+
+    except PermissionError:
+        return 'Permission denied'
+
+    text = file.read_text()
+    html = markdown.markdown(text, output_format="html5")
+
+    return flask.Markup(html)
 
 @app.route('/js/<path:path>')
 def serve_js(path):

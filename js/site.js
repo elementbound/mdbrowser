@@ -5,6 +5,12 @@ function glyphicon(glyph) {
             .addClass(glyph);
 }
 
+function scrollTop() {
+    $('html, body').animate({
+        scrollTop: 0
+    }, 500);
+}
+
 function formatEntry(entry) {
     let row = $('<tr>');
     let cell = $('<td>').appendTo(row);
@@ -17,6 +23,10 @@ function formatEntry(entry) {
             .addClass('icon-expand')
             .appendTo(cell);
 
+    if(entry.flags.markdown)
+        glyphicon('glyphicon-eye-open')
+            .appendTo(cell);
+
     let text = $('<a>').appendTo(cell);
     text.html(entry.name);
 
@@ -25,6 +35,29 @@ function formatEntry(entry) {
     row.data('entry', entry);
 
     return row;
+}
+
+function render(path) {
+    scrollTop();
+    $("#render").html('Rendering...');
+
+    $.get('/render/'+path, undefined, function(data) {
+        $('#render').html(data);
+    })
+}
+
+function entryClick() {
+    var cell = $(this);
+    var row = cell.parent();
+    var entry = row.data('entry');
+
+    console.log(entry);
+
+    if(entry.flags.directory || entry.flags.drive)
+        toggleDirectory(cell);
+
+    if(entry.flags.markdown)
+        render(entry.path);
 }
 
 function collapseDirectory(cell) {
@@ -66,8 +99,7 @@ function expandDirectory(cell) {
             row.insertAfter(parent);
             children.push(row);
 
-            if(entry.flags.directory)
-                cell.click(function(){toggleDirectory($(this));});
+            cell.click(entryClick);
         }
     });
 
@@ -101,7 +133,7 @@ $(document).ready(function() {
 
             row.appendTo(body);
 
-            cell.click(function(){toggleDirectory($(this));});
+            cell.click(entryClick);
         }
     })
 })
