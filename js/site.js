@@ -91,19 +91,43 @@ function expandDirectory(cell) {
     var entry = parent.data('entry');
     var children = [];
 
+    var container_wrapper = $('<div>').appendTo(cell);
+    container_wrapper.hide();
+
+    var container_parent = $('<table>').appendTo(container_wrapper)
+        .addClass('table')
+        .addClass('table-striped');
+
+    var container = $('<tbody>').appendTo(container_parent);
+
     // Expand tree
     $.getJSON('/list/'+entry.path, undefined, function(data) {
         // Reverse-iterate entries
-        for(let i = data.length; i--; ) {
+        for(let i = 0; i<data.length; ++i) {
             let entry = data[i];
             let row = formatEntry(entry);
             let cell = row.find('td');
 
-            row.insertAfter(parent);
+            //row.insertAfter(parent);
+            container.append(row);
             children.push(row);
 
             cell.click(entryClick);
         }
+
+        //alert('Anim start');
+        container_wrapper.slideDown(undefined, function() {
+            // Move items from container to after parent
+            for(let i = data.length; i--; ) {
+                children[i].detach();
+                children[i].insertAfter(parent);
+            }
+
+            // Remove container
+            container_wrapper.remove();
+
+            //alert('Anim done');
+        });
     });
 
     // Remember
