@@ -37,22 +37,40 @@ def browse(path):
     import os
 
     path = Path(path)
-    #files = os.listdir(path)
     data = []
 
-    for file in path.iterdir():
+    # List directories
+    dirpath, dirnames, filenames = next(os.walk(str(path)))
+    for directory in dirnames:
         # Skip file if we have no permission
         try:
-            file.is_dir()
+            directory = Path(path, directory).resolve()
         except PermissionError:
             continue
 
+        flags = {'directory': True}
+        depth = len(directory.parts)-1
+
+        fdata = {
+            'path': str(directory),
+            'name': directory.name,
+            'depth': depth,
+            'flags': flags
+        }
+
+        data.append(fdata)
+
+    # Then files
+    for file in filenames:
+        # Skip file if we have no permission
+        try:
+            file = Path(path, file).resolve()
+        except PermissionError:
+            continue
+
+        depth = len(directory.parts)-1
+
         flags = {}
-        depth = len(file.parts)-1
-
-        if file.is_dir():
-            flags['directory'] = True
-
         if file.suffix == '.md':
             flags['markdown'] = True
 
