@@ -1,3 +1,6 @@
+const glyph_expand = 'glyphicon-chevron-down';
+const glyph_collapse = 'glyphicon-chevron-up';
+
 function glyphicon(glyph) {
     return $('<span>')
             .attr('aria-hidden', true)
@@ -19,7 +22,7 @@ function formatEntry(entry) {
         glyphicon('glyphicon-hdd').appendTo(cell);
 
     if(entry.flags.directory)
-        glyphicon('glyphicon-plus')
+        glyphicon(glyph_expand)
             .addClass('icon-expand')
             .appendTo(cell);
 
@@ -79,8 +82,8 @@ function collapseDirectory(cell) {
 
     // Show
     cell.find('.icon-expand')
-        .removeClass('glyphicon-minus')
-        .addClass('glyphicon-plus');
+        .removeClass(glyph_collapse)
+        .addClass(glyph_expand);
 }
 
 function expandDirectory(cell) {
@@ -109,8 +112,8 @@ function expandDirectory(cell) {
 
     // Show
     cell.find('.icon-expand')
-        .removeClass('glyphicon-plus')
-        .addClass('glyphicon-minus');
+        .removeClass(glyph_expand)
+        .addClass(glyph_collapse);
 }
 
 function toggleDirectory(cell) {
