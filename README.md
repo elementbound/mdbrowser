@@ -18,6 +18,17 @@ After installing Python, you can simply get all the dependencies from the comman
 
 ## Running ##
 
+### Simple way ###
+
+A small snippet of code at the end of `main.py` is included to simplify running the application.
+Open up a terminal and type
+
+``py main.py run [debug]``
+
+The script will do the same as the section below does. Add the debug keyword to run in debug mode. 
+
+### Manually ###
+
 Start a terminal in the project's directory and set an environment variable for Flask to know
 what to run:
 
@@ -35,4 +46,4 @@ Now, run the application:
 
 ``flask run``
 
-Open [localhost:5000](http://localhost:5000/) in your browser and read some markdown. 
+Open [localhost:5000](http://localhost:5000/) in your browser and read some markdown.

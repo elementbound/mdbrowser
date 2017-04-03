@@ -96,3 +96,17 @@ def serve_css(path):
 @app.route('/fonts/<path:path>')
 def serve_font(path):
     return flask.send_from_directory('fonts', path)
+
+# Simplified run
+if __name__ == '__main__':
+    import sys
+    import os
+    import subprocess
+
+    if 'run' in sys.argv:
+        env = os.environ.copy()
+        env['FLASK_APP'] = 'main.py'
+        if 'debug' in sys.argv:
+            env['FLASK_DEBUG'] = 'True'
+
+        subprocess.run(['flask', 'run'], env=env)
