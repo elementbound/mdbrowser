@@ -40,12 +40,39 @@ function formatEntry(entry) {
     return row;
 }
 
+function patch_refs(e, base_url) {
+    var r = new RegExp('^(?:[a-z]+:)?//', 'i');
+    var base_url = base_url; 
+
+    e.find('img').each(function () {
+        let src = $(this).attr('src');
+
+        if(!r.test(src))
+            $(this).attr('src', '/local/' + base_url + src);
+    })
+}
+
 function render(path) {
     scrollTop();
     $("#render").html('Rendering...');
 
     $.get('/render/'+path, undefined, function(data) {
         $('#render').html(data);
+
+        let base_url = path;
+        base_url = base_url.split('\\').join('/');
+        console.log(base_url);
+
+        base_url = base_url.split('/');
+        console.log(base_url);
+
+        base_url.pop();
+        console.log(base_url);
+
+        base_url = base_url.join('/') + '/';
+        console.log(base_url);
+
+        patch_refs($('#render'), base_url);
     })
 }
 
@@ -115,7 +142,6 @@ function expandDirectory(cell) {
             cell.click(entryClick);
         }
 
-        //alert('Anim start');
         container_wrapper.slideDown(undefined, function() {
             // Move items from container to after parent
             for(let i = data.length; i--; ) {
@@ -125,8 +151,6 @@ function expandDirectory(cell) {
 
             // Remove container
             container_wrapper.remove();
-
-            //alert('Anim done');
         });
     });
 

@@ -103,6 +103,17 @@ def render(file):
 
     return flask.Markup(html)
 
+@app.route('/local/<path:file>')
+def local(file):
+    file = Path(file).absolute()
+    try:
+        if not file.is_file():
+            return 'Error'
+    except PermissionError:
+        return 'Permission denied'
+
+    return flask.send_file(str(file))
+
 @app.route('/js/<path:path>')
 def serve_js(path):
     return flask.send_from_directory('js', path)
