@@ -42,7 +42,7 @@ function formatEntry(entry) {
 
 function patch_refs(e, base_url) {
     var r = new RegExp('^(?:[a-z]+:)?//', 'i');
-    var base_url = base_url; 
+    var base_url = base_url;
 
     e.find('img').each(function () {
         let src = $(this).attr('src');
@@ -171,6 +171,41 @@ function toggleDirectory(cell) {
         expandDirectory(cell);
 }
 
+// Sidebar code
+function sidebar() {
+    $('.sidebar').each(function() {
+        var parent = $(this);
+        var toggler = $(this).find('.sidebar-toggler');
+        var optional = $(this).find('.sidebar-optional');
+        var chevron = toggler.find('.glyphicon');
+
+        // TODO: Check if the chevron find fails on no chevrons
+        // TODO: Show a warning if toggler or optional is missing
+
+        toggler.click(function() {
+            let offset = optional.width();
+
+            if(parent.hasClass('sidebar-on')) {
+                parent.removeClass('sidebar-on');
+                parent.addClass('sidebar-off');
+
+                parent.css('position', 'absolute');
+                parent.animate('left', -offset);
+
+                chevron.removeClass('glyphicon-chevron-left');
+                chevron.addClass('glyphicon-chevron-right');
+            }
+            else {
+                parent.addClass('sidebar-on');
+                parent.removeClass('sidebar-off');
+
+                chevron.addClass('glyphicon-chevron-left');
+                chevron.removeClass('glyphicon-chevron-right');
+            }
+        })
+    })
+}
+
 $(document).ready(function() {
     // Query root directories and add them to browse pane
     $.getJSON('/list/', undefined, function(data) {
@@ -186,5 +221,22 @@ $(document).ready(function() {
 
             cell.click(entryClick);
         }
-    })
+    });
+
+    // Sidebar code
+    $('.sidebar-toggle').click(function() {
+        let chevron = $(this).find('span.glyphicon');
+
+        if(chevron.hasClass('glyphicon-chevron-left')) {
+            chevron.removeClass('glyphicon-chevron-left');
+            chevron.addClass('glyphicon-chevron-right');
+
+            $('.sidebar-optional').hide();
+        } else {
+            chevron.addClass('glyphicon-chevron-left');
+            chevron.removeClass('glyphicon-chevron-right');
+
+            $('.sidebar-optional').show();
+        }
+    });
 })

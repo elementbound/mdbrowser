@@ -1,3 +1,13 @@
 .icon-expand {
     color: rgba(0,0,0, 0.5)
 }
+
+.sidebar-toggle {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    z-index: 32;
+
+    font-size: 2em;
+}
